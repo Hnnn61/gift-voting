@@ -1,1 +1,143 @@
 
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Girls Gift Party 🎀</title>
+<style>
+body {
+  margin:0;
+  padding:20px;
+  background:#fff3f7;
+  color:#70485a;
+  font-family:Arial,sans-serif;
+}
+main {
+  max-width:520px;
+  margin:auto;
+}
+header,.question,.result {
+  background:white;
+  border-radius:20px;
+  padding:20px;
+  margin-bottom:16px;
+  box-shadow:0 3px 12px #eacbd6;
+}
+header {text-align:center}
+h1 {color:#c66d91}
+h2 {font-size:18px}
+.option {
+  display:block;
+  padding:9px 0;
+}
+button {
+  border:0;
+  border-radius:14px;
+  background:#d783a3;
+  color:white;
+  padding:13px 20px;
+  font-size:16px;
+  cursor:pointer;
+}
+select,input {
+  padding:12px;
+  border:1px solid #edcada;
+  border-radius:10px;
+  width:100%;
+  box-sizing:border-box;
+}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>🎀 Girls Gift Party 🎀</h1>
+<p>三個女生的交換禮物企劃</p>
+<p>一起決定我們的快樂行程 ♡</p>
+</header>
+
+<section class="question">
+<h2>選擇你的名字</h2>
+<select id="person">
+<option>朋友 1</option>
+<option>朋友 2</option>
+<option>朋友 3</option>
+</select>
+</section>
+
+<div id="questions"></div>
+
+<button onclick="submitVote()">提交我的投票 ♡</button>
+<button onclick="showResults()" style="background:#98778a">
+查看目前結果
+</button>
+
+<div id="results"></div>
+</main>
+
+<script>
+const data = [
+["每人總預算（含吃飯、活動、禮物）",
+["500–800 元","800–1,000 元","1,000–1,500 元","1,500–2,000 元","2,000 元以上"],false],
+["交換禮物預算",
+["300 元","500 元","800 元","1,000 元"],false],
+["交換禮物主題",
+["實用質感型","可愛療癒型","美妝保養型","搞笑地獄型","驚喜盲抽型","不限主題，自由發揮"],false],
+["當天想安排什麼活動？",
+["DIY 手作（香氛、陶藝、金工）","拍貼＋逛街","密室逃脫／桌遊","咖啡廳／下午茶","純吃飯＋交換禮物","其他有趣體驗"],true],
+["晚餐想吃什麼？",
+["火鍋","燒肉","義式料理","日式料理","韓式料理","餐酒館"],true]
+];
+
+const container = document.getElementById("questions");
+
+data.forEach((q,i)=>{
+ const section=document.createElement("section");
+ section.className="question";
+ section.innerHTML="<h2>"+(i+1)+". "+q[0]+"</h2>";
+ q[1].forEach(option=>{
+   const label=document.createElement("label");
+   label.className="option";
+   const input=document.createElement("input");
+   input.type=q[2]?"checkbox":"radio";
+   input.name="q"+i;
+   input.value=option;
+   label.append(input,document.createTextNode(" "+option));
+   section.append(label);
+ });
+ container.append(section);
+});
+
+function submitVote(){
+ const name=document.getElementById("person").value;
+ const answers=data.map((q,i)=>{
+   return [...document.querySelectorAll('input[name="q'+i+'"]:checked')]
+     .map(el=>el.value);
+ });
+ if(answers.some(a=>a.length===0)){
+   alert("還有題目尚未作答喔！");
+   return;
+ }
+ const votes=JSON.parse(localStorage.getItem("giftVotes")||"{}");
+ votes[name]=answers;
+ localStorage.setItem("giftVotes",JSON.stringify(votes));
+ alert("投票完成！謝謝參與 ♡");
+}
+
+function showResults(){
+ const votes=JSON.parse(localStorage.getItem("giftVotes")||"{}");
+ const result=document.getElementById("results");
+ result.innerHTML="<section class='result'><h2>🎀 投票結果</h2>";
+ Object.keys(votes).forEach(name=>{
+   result.innerHTML+="<h3>"+name+"</h3>";
+   votes[name].forEach((a,i)=>{
+     result.innerHTML+="<p>"+data[i][0]+": "+a.join("、")+"</p>";
+   });
+ });
+ result.innerHTML+="</section>";
+}
+</script>
+</body>
+</html>
+
